@@ -17,4 +17,10 @@ public:
 	void Load();
 	void Update(double deltaTime);
 	void Draw(sf::RenderWindow& window);
+
+// Getters and Setters 
+public:
+	void SetSpeed(float speed);
+	void SetPosition(const sf::Vector2f& pos);
+	sf::Vector2f GetPosition() const;
 };

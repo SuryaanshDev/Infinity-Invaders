@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(SFML)
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-add_executable(main src/main.cpp "include/Player.h" "src/player.cpp" "include/Bullet.h" "src/bullet.cpp" "src/Enemy.cpp")
+add_executable(main src/main.cpp "include/Player.h" "src/player.cpp" "include/Bullet.h" "src/bullet.cpp" "src/Enemy.cpp" "include/EnemySpawner.h" "src/EnemySpawner.cpp")
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
 target_include_directories(main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")

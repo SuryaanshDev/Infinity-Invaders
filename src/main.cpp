@@ -2,6 +2,7 @@
 #include "include/Player.h"
 #include <iostream>
 #include "include/Enemy.h"
+#include "include/EnemySpawner.h"
 
 int main()
 {
@@ -32,9 +33,7 @@ int main()
     sf::Clock clock;
 
 //--------------Initializing and loading Enemy---------------------
-    Enemy enemy;
-    enemy.Load();
-    enemy.Initialize();
+    EnemySpawner spawner;
 //----------------------------------------------------------------
     while (window.isOpen())
     {
@@ -42,7 +41,8 @@ int main()
         double deltaTime = deltaTimeTimer.asSeconds();
 
         Plane.Update(deltaTime);
-        enemy.Update(deltaTime);
+        
+        spawner.Update(deltaTime);
 
         while (const std::optional event = window.pollEvent())
         {
@@ -55,7 +55,7 @@ int main()
         window.clear();
         window.draw(map);
         Plane.Draw(window);
-        enemy.Draw(window);
+        spawner.Draw(window);
         window.display();
     }
 }

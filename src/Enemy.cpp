@@ -2,7 +2,7 @@
 #include <iostream>
 
 Enemy::Enemy()
-	:m_EnemySpeed(0), m_EnemyHealth(5), m_EnemySprite(m_EnemyTexture)
+	:m_EnemySpeed(300.0f), m_EnemyHealth(5), m_EnemySprite(m_EnemyTexture)
 {
 }
 
@@ -42,10 +42,29 @@ void Enemy::Load()
 
 void Enemy::Update(double deltaTime)
 {
+
+	m_EnemySprite.move({ 0, m_EnemySpeed * static_cast<float>(deltaTime) });
 }
 
 void Enemy::Draw(sf::RenderWindow& window)
 {
 
 	window.draw(m_EnemySprite);
+}
+
+void Enemy::SetSpeed(float speed)
+{
+	m_EnemySpeed = speed;
+}
+
+void Enemy::SetPosition(const sf::Vector2f& pos)
+{
+
+	m_EnemySprite.setPosition(pos);
+}
+
+sf::Vector2f Enemy::GetPosition() const
+{
+
+	return	m_EnemySprite.getPosition();
 }
