@@ -16,6 +16,7 @@ void Player::Initialize()
 {
 
 	m_PlayerSprite.setScale({4, 4});
+	m_PlayerSprite.setPosition({850, 850});
 }
 
 void Player::Load() {
@@ -30,7 +31,7 @@ void Player::Load() {
 
 	else {
 
-		std::cout << "Sprite loaded successfully :)" << std::endl;
+		std::cout << "Player sprite loaded successfully :)" << std::endl;
 	}
 	
 	m_PlayerSprite.setTexture(m_PlayerTexture);
