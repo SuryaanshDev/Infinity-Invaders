@@ -40,7 +40,7 @@ int main()
         sf::Time deltaTimeTimer = clock.restart();
         double deltaTime = deltaTimeTimer.asSeconds();
 
-        Plane.Update(deltaTime);
+        Plane.Update(deltaTime, spawner);
         
         spawner.Update(deltaTime);
 

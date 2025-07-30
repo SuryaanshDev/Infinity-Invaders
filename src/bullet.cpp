@@ -36,3 +36,8 @@ sf::Vector2f Bullet::GetPosition()
 
 	return m_Bullet.getPosition();
 }
+
+sf::FloatRect Bullet::GetBounds() const {
+
+	return m_Bullet.getGlobalBounds();
+}

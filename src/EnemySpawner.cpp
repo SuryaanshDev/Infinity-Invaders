@@ -40,7 +40,7 @@ void EnemySpawner::Update(double deltaTime)
 	enemies.erase(
 		std::remove_if(enemies.begin(), enemies.end(),[](const std::unique_ptr<Enemy>& e) {
 				
-				return e->GetPosition().y > 1100;
+				return e->GetPosition().y > 1100 || e->GetHealth() <= 0;
 			}),
 		enemies.end()
 	);
@@ -53,4 +53,10 @@ void EnemySpawner::Draw(sf::RenderWindow& window)
 		
 		enemy->Draw(window);
 	}
+}
+
+std::vector<std::unique_ptr<Enemy>>& EnemySpawner::GetEnemies()
+{
+
+	return enemies;
 }

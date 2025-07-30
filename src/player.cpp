@@ -1,6 +1,7 @@
 #include "include/Player.h"
 #include <iostream>
-
+#include "include/Math.h"
+#include "include/EnemySpawner.h"
 
 Player::Player(int width, int height, float speed)
 	: m_Width(width), m_Height(height), m_PlayerSpeed(speed), m_PlayerSprite(m_PlayerTexture),
@@ -41,7 +42,7 @@ void Player::Load() {
 	m_PlayerSprite.setTextureRect(spriteRect);
 }
 
-void Player::Update(double deltaTime)
+void Player::Update(double deltaTime, EnemySpawner& spawner)
 {
 
 	sf::Vector2f position = m_PlayerSprite.getPosition();
@@ -61,6 +62,8 @@ void Player::Update(double deltaTime)
 
 		m_FireTimer = 0.0f;
 	}
+
+	auto& enemy = spawner.GetEnemies();
 	
 	for (auto& bullet : bullets) {
 		
@@ -73,6 +76,16 @@ void Player::Update(double deltaTime)
 			
 			bullets.erase(bullets.begin() + i);
 			std::cout << "Bullet " << i << " deleted" << std::endl;
+		}
+
+		for (auto it = enemy.begin(); it != enemy.end(); ++it) {
+
+			if (Math::IsColliding(bullets[i]->GetBounds(), (*it)->GetBounds())) {
+			
+				(*it)->SetHealth(-1);
+				bullets.erase(bullets.begin() + i);
+				std::cout << "Enemy Health: " << (*it)->GetHealth() << std::endl;
+			}
 		}
 	}
 }

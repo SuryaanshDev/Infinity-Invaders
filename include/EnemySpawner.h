@@ -18,4 +18,5 @@ public:
 
 	void Update(double deltaTime);
 	void Draw(sf::RenderWindow& window);
+	std::vector<std::unique_ptr<Enemy>>& GetEnemies();
 };

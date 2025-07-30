@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "include/Bullet.h"
+#include "include/EnemySpawner.h"
 
 class Player {
 
@@ -26,7 +27,7 @@ public:
 	~Player();
 	void Initialize();
 	void Load();
-	void Update(double deltaTime);
+	void Update(double deltaTime, EnemySpawner& spawner);
 	void Draw(sf::RenderWindow& window);
 private:
 
