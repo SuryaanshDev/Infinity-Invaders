@@ -70,22 +70,37 @@ void Player::Update(double deltaTime, EnemySpawner& spawner)
 		bullet->Update(deltaTime);
 	}
 
+	std::vector<int> bulletsToRemove;
+
 	for (int i = 0; i < bullets.size(); i++) {
 
 		if (bullets[i]->GetPosition().y < -1920) {
 			
-			bullets.erase(bullets.begin() + i);
-			std::cout << "Bullet " << i << " deleted" << std::endl;
+			bulletsToRemove.push_back(i);
+			continue;
 		}
 
-		for (auto it = enemy.begin(); it != enemy.end(); ++it) {
+		for (auto& e : enemy) {
 
-			if (Math::IsColliding(bullets[i]->GetBounds(), (*it)->GetBounds())) {
+			if (Math::IsColliding(bullets[i]->GetBounds(), e->GetBounds())) {
 			
-				(*it)->SetHealth(-1);
+				e->SetHealth(-1);
+				bulletsToRemove.push_back(i);
 				bullets.erase(bullets.begin() + i);
-				std::cout << "Enemy Health: " << (*it)->GetHealth() << std::endl;
+				std::cout << "Enemy Health: " << e->GetHealth() << std::endl;
+				break;
 			}
+		}
+	}
+
+	std::sort(bulletsToRemove.rbegin(), bulletsToRemove.rend());
+
+	for (int i : bulletsToRemove) {
+		
+		if (i >= 0 && i < bullets.size()) {
+			
+			bullets.erase(bullets.begin() + i);
+			std::cout << "Bullet : " << i << "deleted" << std::endl;
 		}
 	}
 }
