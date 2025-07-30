@@ -4,8 +4,8 @@
 #include "include/EnemySpawner.h"
 
 Player::Player(int width, int height, float speed)
-	: m_Width(width), m_Height(height), m_PlayerSpeed(speed), m_PlayerSprite(m_PlayerTexture),
-	m_FireCooldown(0.15f), m_FireTimer(0.0f)
+	: m_PlayerWidth(width), m_PlayerHeight(height), m_PlayerSpeed(speed), m_PlayerHealth(3),
+	m_PlayerSprite(m_PlayerTexture), m_FireCooldown(0.15f), m_FireTimer(0.0f)
 {
 }
 
@@ -37,7 +37,7 @@ void Player::Load() {
 	
 	m_PlayerSprite.setTexture(m_PlayerTexture);
 
-	sf::IntRect spriteRect({ xIndex * m_Width, yIndex * m_Width }, { m_Width , m_Height });
+	sf::IntRect spriteRect({ xIndex * m_PlayerWidth, yIndex * m_PlayerHeight }, { m_PlayerWidth , m_PlayerHeight });
 
 	m_PlayerSprite.setTextureRect(spriteRect);
 }
@@ -99,6 +99,12 @@ void Player::Draw(sf::RenderWindow& window)
 		
 		bullet->Draw(window);
 	}
+}
+
+int Player::GetHealth() const
+{
+
+	return m_PlayerHealth;
 }
 
 void Player::Move() {

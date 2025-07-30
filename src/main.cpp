@@ -3,6 +3,7 @@
 #include <iostream>
 #include "include/Enemy.h"
 #include "include/EnemySpawner.h"
+#include "include/HUD.h"
 
 int main()
 {
@@ -14,7 +15,12 @@ int main()
     Plane.Load();
     Plane.Initialize();
 // ------------------------------------------------------------
-
+//------------------Initializing and loading the HUD-----------
+    Hud hud;
+    hud.Load();
+    hud.SetPosition({10, 10});
+    hud.SetScale({2, 2});
+//------------------------------------------------------------- 
 //----------------- Loading and setting map--------------------
     sf::Texture mapTexture;
     
@@ -56,6 +62,7 @@ int main()
         window.draw(map);
         Plane.Draw(window);
         spawner.Draw(window);
+        hud.Draw(window);
         window.display();
     }
 }

@@ -3,7 +3,7 @@
 #include "include/Math.h"
 
 Enemy::Enemy()
-	:m_EnemySpeed(300.0f), m_EnemyHealth(5), m_EnemySprite(m_EnemyTexture)
+	:m_EnemySpeed(300.0f), m_EnemyHealth(3), m_EnemySprite(m_EnemyTexture)
 {
 }
 
@@ -62,7 +62,6 @@ void Enemy::Draw(sf::RenderWindow& window)
 {
 
 	window.draw(m_EnemySprite);
-	window.draw(m_BoundingRectangle);
 }
 
 void Enemy::SetSpeed(float speed)

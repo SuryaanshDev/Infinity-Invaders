@@ -7,10 +7,11 @@ class Player {
 
 private: 
 	
-	int m_Width;
-	int m_Height;
+	int m_PlayerWidth;
+	int m_PlayerHeight;
 	float m_PlayerSpeed;
-	
+	int m_PlayerHealth;
+
 	sf::Texture m_PlayerTexture;
 
 	sf::Sprite m_PlayerSprite;
@@ -29,6 +30,7 @@ public:
 	void Load();
 	void Update(double deltaTime, EnemySpawner& spawner);
 	void Draw(sf::RenderWindow& window);
+	int GetHealth() const;
 private:
 
 	void Move();
