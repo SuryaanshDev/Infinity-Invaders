@@ -2,7 +2,8 @@
 #include <iostream>
 
 Hud::Hud()
-	: m_HealthSprite(m_HealthTexture), m_CurrentHealth(3), m_Score(0)
+	: m_HealthSprite(m_HealthTexture), m_CurrentHealth(3), m_CurrentScore(0), m_ScoreText(m_ScoreFont)
+
 {
 }
 
@@ -12,7 +13,22 @@ Hud::~Hud()
 
 void Hud::Load()
 {
+// -------------------Loading Score Font----------------------------------------
+	if (!m_ScoreFont.openFromFile("resources/ScoreFont.ttf")) {
+		
+		std::cerr << "Score font not found!" << std::endl;
+	}
 
+	else {
+
+		std::cout << "Score font loaded successfully :)" << std::endl;
+	}
+
+	m_ScoreText.setFont(m_ScoreFont);
+	
+//-------------------------------------------------------------------------------------
+
+// -------------------------Loading Heart textures and sprite--------------------------	
 	if (!m_HealthTexture.loadFromFile("resources/Heart.png")) {
 
 		std::cerr << "Health Textures not found!" << std::endl;
@@ -22,24 +38,24 @@ void Hud::Load()
 
 		std::cout << "Health Textures found successfully :)" << std::endl;
 	}
-	
+
 	for (int i = 0; i < m_CurrentHealth; i++) {
 		
 		sf::Sprite heart(m_HealthTexture);
-		heart.setTextureRect(sf::IntRect({ 0 * 32, 0 * 32 }, { 32, 32 }));
+		heart.setTextureRect(sf::IntRect({ 0, 0 }, { 32, 32 }));
 
 		m_Health.push_back(heart);
-		
-		for (int i = 0; i < m_CurrentHealth; i++) {
-	
-			heart.setScale({ 2, 2 });
-		}
 	}
+
+	
+//-----------------------------------------------------------------------------------------	
 }
 
 void Hud::Initialize()
 {
 
+	m_ScoreText.setPosition({1700, 10});
+	m_ScoreText.setFillColor(sf::Color::Green);
 }
 
 void Hud::SetPosition(sf::Vector2f pos)
@@ -61,6 +77,31 @@ void Hud::SetScale(sf::Vector2f scale)
 
 void Hud::Update(double deltaTime, Player& player) 
 {
+
+	int newHealth = player.GetHealth();
+
+	if (newHealth != m_CurrentHealth) {
+		
+		m_CurrentHealth = newHealth;
+
+		m_Health.clear();
+
+		for (int i = 0; i < m_CurrentHealth; i++) {
+			
+			sf::Sprite heart(m_HealthTexture);
+			heart.setTextureRect(sf::IntRect({ 0, 0 }, { 32, 32 }));
+			m_Health.push_back(heart);
+		}
+
+		SetPosition({10.0f, 10.0f});
+		SetScale({2, 2});
+	}
+	
+	SetScore(player.GetScore());
+	
+	m_ScoreText.setString("Score: " + std::to_string(m_CurrentScore));
+
+	std::cout << "Score: " << m_CurrentScore << std::endl;
 }
 
 void Hud::Draw(sf::RenderWindow& window)
@@ -70,9 +111,11 @@ void Hud::Draw(sf::RenderWindow& window)
 
 		window.draw(m_Health[i]);
 	}
+
+	window.draw(m_ScoreText);
 }
 
-void Hud::SetScore()
+void Hud::SetScore(int score)
 {
-		
+	m_CurrentScore = score;
 } 

@@ -9,6 +9,9 @@ private:
 	sf::Texture m_EnemyTexture;
 	sf::Sprite m_EnemySprite;
 	sf::RectangleShape m_BoundingRectangle;
+
+	bool m_IsDead;
+
 public:
 	
 	Enemy();
@@ -19,6 +22,9 @@ public:
 	void Update(double deltaTime);
 	void Draw(sf::RenderWindow& window);
 	void SetHealth(int hp);
+
+	bool IsDead() const;
+	void MarkDead();
 // Getters and Setters 
 public:
 	

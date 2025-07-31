@@ -3,7 +3,8 @@
 #include "include/Math.h"
 
 Enemy::Enemy()
-	:m_EnemySpeed(300.0f), m_EnemyHealth(3), m_EnemySprite(m_EnemyTexture)
+	:m_EnemySpeed(300.0f), m_EnemyHealth(3), m_EnemySprite(m_EnemyTexture),
+	m_IsDead(false)
 {
 }
 
@@ -38,7 +39,7 @@ void Enemy::Load()
 
 	else {
 
-		std::cout << "Enemy textures loaded successfully :)";
+		std::cout << "Enemy textures loaded successfully :)" << std::endl;
 	}
 
 	m_EnemySprite.setTexture(m_EnemyTexture);
@@ -89,6 +90,16 @@ int Enemy::GetHealth() const {
 void Enemy::SetHealth(int hp)
 {
 	m_EnemyHealth += hp;
+}
+
+bool Enemy::IsDead() const
+{
+	return m_IsDead;
+}
+
+void Enemy::MarkDead()
+{
+	m_IsDead = true;
 }
 
 sf::FloatRect Enemy::GetBounds() const{

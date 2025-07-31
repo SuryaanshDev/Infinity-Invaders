@@ -4,8 +4,9 @@
 #include "include/EnemySpawner.h"
 
 Player::Player(int width, int height, float speed)
-	: m_PlayerWidth(width), m_PlayerHeight(height), m_PlayerSpeed(speed), m_PlayerHealth(3),
-	m_PlayerSprite(m_PlayerTexture), m_FireCooldown(0.15f), m_FireTimer(0.0f)
+	: m_PlayerWidth(width), m_PlayerHeight(height), m_PlayerSpeed(speed), m_PlayerHealth(5),
+	m_PlayerSprite(m_PlayerTexture), m_FireCooldown(0.15f), m_FireTimer(0.0f),
+	m_DamageCooldown(1.0f), m_DamageTimer(0.0f), isAlive(true), m_PlayerScore(0)
 {
 }
 
@@ -45,6 +46,13 @@ void Player::Load() {
 void Player::Update(double deltaTime, EnemySpawner& spawner)
 {
 
+	if (Kill()) {
+	
+		std::cout << "You Died Game Over!" << std::endl;
+	}
+	
+	m_DamageTimer += deltaTime;
+
 	sf::Vector2f position = m_PlayerSprite.getPosition();
 
 	Move();
@@ -71,6 +79,18 @@ void Player::Update(double deltaTime, EnemySpawner& spawner)
 	}
 
 	std::vector<int> bulletsToRemove;
+	
+	for (auto& e : enemy) {
+
+		if ( e->GetPosition().y > 1080 && m_DamageTimer >= m_DamageCooldown || Math::IsColliding(m_PlayerSprite.getGlobalBounds(), e->GetBounds()) && 
+			m_DamageTimer >= m_DamageCooldown) {
+				
+			e->SetHealth(-1);
+			TakeDamage(1);
+			m_DamageTimer = 0.0f;
+			continue;
+		}
+	}
 
 	for (int i = 0; i < bullets.size(); i++) {
 
@@ -81,12 +101,20 @@ void Player::Update(double deltaTime, EnemySpawner& spawner)
 		}
 
 		for (auto& e : enemy) {
-
-			if (Math::IsColliding(bullets[i]->GetBounds(), e->GetBounds())) {
 			
+			
+			if (Math::IsColliding(bullets[i]->GetBounds(), e->GetBounds())) {
+				
 				e->SetHealth(-1);
 				bulletsToRemove.push_back(i);
 				bullets.erase(bullets.begin() + i);
+//------------------------------------------------Score Logic--------------------------------
+				if (e->GetHealth() <= 0 && !e->IsDead()) {
+				
+					SetScore(1);
+					e->MarkDead();
+				}
+//------------------------------------------------------------------------------------------
 				std::cout << "Enemy Health: " << e->GetHealth() << std::endl;
 				break;
 			}
@@ -122,6 +150,18 @@ int Player::GetHealth() const
 	return m_PlayerHealth;
 }
 
+void Player::TakeDamage(int dmg)
+{
+
+	m_PlayerHealth -= dmg;
+
+	if (m_PlayerHealth < 0) {
+
+		m_PlayerHealth = 0;
+		std::cout << "Player damaged!\n" << "Health: " << m_PlayerHealth << std::endl;
+	}
+}
+
 void Player::Move() {
 	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
@@ -143,4 +183,26 @@ void Player::Move() {
 		
 		m_PlayerSprite.move({m_PlayerSpeed, 0});
 	}
+}
+
+bool Player::Kill()
+{
+
+	if (m_PlayerHealth == 0) {
+	
+		return true;
+	}
+
+	return false;
+}
+
+void Player::SetScore(int score)
+{
+	
+	m_PlayerScore += score;
+}
+
+int Player::GetScore() const {
+
+	return m_PlayerScore;
 }

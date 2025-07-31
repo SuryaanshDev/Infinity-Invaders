@@ -9,7 +9,6 @@ int main()
 {
     auto window = sf::RenderWindow(sf::VideoMode({1920u, 1080u}), "GameCpp");
     window.setFramerateLimit(60);
-
 // --------------Initializing and loading player---------------- 
     Player Plane(32, 32, 20.0f);
     Plane.Load();
@@ -18,6 +17,7 @@ int main()
 //------------------Initializing and loading the HUD-----------
     Hud hud;
     hud.Load();
+    hud.Initialize();
     hud.SetPosition({10, 10});
     hud.SetScale({2, 2});
 //------------------------------------------------------------- 
@@ -49,6 +49,8 @@ int main()
         Plane.Update(deltaTime, spawner);
         
         spawner.Update(deltaTime);
+
+        hud.Update(deltaTime, Plane);
 
         while (const std::optional event = window.pollEvent())
         {

@@ -11,7 +11,12 @@ private:
 	sf::Sprite m_HealthSprite;
 	std::vector<sf::Sprite> m_Health;
 	int m_CurrentHealth;
-	int m_Score;
+
+private:
+
+	sf::Font m_ScoreFont;
+	sf::Text m_ScoreText;
+	int m_CurrentScore;
 
 public:
 
@@ -24,5 +29,5 @@ public:
 	void SetScale(sf::Vector2f scale);
 	void Update(double deltaTime, Player& player);
 	void Draw(sf::RenderWindow& window);
-	void SetScore();
+	void SetScore(int score);
 };

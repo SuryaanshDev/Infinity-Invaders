@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "include/Bullet.h"
 #include "include/EnemySpawner.h"
+#include "include/Enemy.h"
 
 class Player {
 
@@ -12,15 +13,26 @@ private:
 	float m_PlayerSpeed;
 	int m_PlayerHealth;
 
+	int m_PlayerScore;
+
+private:
+
 	sf::Texture m_PlayerTexture;
 
 	sf::Sprite m_PlayerSprite;
 
 	std::vector<std::unique_ptr<Bullet>> bullets;
 
+private:
+
 	float m_FireCooldown;
 
 	float m_FireTimer;
+	
+	float m_DamageCooldown;
+	float m_DamageTimer;
+
+	bool isAlive;
 
 public:
 	
@@ -30,8 +42,16 @@ public:
 	void Load();
 	void Update(double deltaTime, EnemySpawner& spawner);
 	void Draw(sf::RenderWindow& window);
+
+public:
+
 	int GetHealth() const;
+	void TakeDamage(int dmg);
+	
+	int GetScore() const;
 private:
 
 	void Move();
+	bool Kill();
+	void SetScore(int score);
 };
