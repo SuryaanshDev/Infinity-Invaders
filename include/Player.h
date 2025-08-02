@@ -32,7 +32,7 @@ private:
 	float m_DamageCooldown;
 	float m_DamageTimer;
 
-	bool isAlive;
+	bool m_IsDead;
 
 public:
 	
@@ -49,9 +49,10 @@ public:
 	void TakeDamage(int dmg);
 	
 	int GetScore() const;
+	bool IsDead();
+
 private:
 
 	void Move();
-	bool Kill();
 	void SetScore(int score);
 };

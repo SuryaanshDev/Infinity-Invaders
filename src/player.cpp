@@ -6,7 +6,7 @@
 Player::Player(int width, int height, float speed)
 	: m_PlayerWidth(width), m_PlayerHeight(height), m_PlayerSpeed(speed), m_PlayerHealth(5),
 	m_PlayerSprite(m_PlayerTexture), m_FireCooldown(0.15f), m_FireTimer(0.0f),
-	m_DamageCooldown(1.0f), m_DamageTimer(0.0f), isAlive(true), m_PlayerScore(0)
+	m_DamageCooldown(1.0f), m_DamageTimer(0.0f), m_PlayerScore(0), m_IsDead(false)
 {
 }
 
@@ -46,7 +46,7 @@ void Player::Load() {
 void Player::Update(double deltaTime, EnemySpawner& spawner)
 {
 
-	if (Kill()) {
+	if (IsDead()) {
 	
 		std::cout << "You Died Game Over!" << std::endl;
 	}
@@ -155,9 +155,10 @@ void Player::TakeDamage(int dmg)
 
 	m_PlayerHealth -= dmg;
 
-	if (m_PlayerHealth < 0) {
+	if (m_PlayerHealth <= 0) {
 
 		m_PlayerHealth = 0;
+		m_IsDead = true;
 		std::cout << "Player damaged!\n" << "Health: " << m_PlayerHealth << std::endl;
 	}
 }
@@ -185,15 +186,9 @@ void Player::Move() {
 	}
 }
 
-bool Player::Kill()
+bool Player::IsDead()
 {
-
-	if (m_PlayerHealth == 0) {
-	
-		return true;
-	}
-
-	return false;
+	return m_IsDead;
 }
 
 void Player::SetScore(int score)

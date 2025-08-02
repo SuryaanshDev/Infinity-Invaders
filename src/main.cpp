@@ -35,6 +35,21 @@ int main()
     }
     
     sf::Sprite map(mapTexture);
+
+    sf::Texture gameOverTexture;
+
+    if (!gameOverTexture.loadFromFile("resources/Game_Over.jpg")) {
+        
+        std::cerr << "Unable to load gameOver texture!" << std::endl;
+    }
+
+    else {
+
+        std::cout << "Game over textures loaded successfully :)" << std::endl;
+    }
+
+    sf::Sprite gameOver(gameOverTexture);
+ 
 //-----------------------------------------------------------------
     sf::Clock clock;
 
@@ -45,10 +60,13 @@ int main()
     {
         sf::Time deltaTimeTimer = clock.restart();
         double deltaTime = deltaTimeTimer.asSeconds();
-
-        Plane.Update(deltaTime, spawner);
         
-        spawner.Update(deltaTime);
+        if (!Plane.IsDead()) {
+
+            Plane.Update(deltaTime, spawner);
+
+            spawner.Update(deltaTime);
+        }
 
         hud.Update(deltaTime, Plane);
 
@@ -61,10 +79,20 @@ int main()
         }
         
         window.clear();
-        window.draw(map);
-        Plane.Draw(window);
-        spawner.Draw(window);
-        hud.Draw(window);
+
+        if (!Plane.IsDead()) {
+            
+            window.draw(map);
+            Plane.Draw(window);
+            spawner.Draw(window);
+            hud.Draw(window);
+        }
+
+        else {
+
+            window.draw(gameOver);
+        }
+
         window.display();
     }
 }

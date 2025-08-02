@@ -70,6 +70,8 @@ void Hud::SetScale(sf::Vector2f scale)
 {
 
 	for (int i = 0; i < m_CurrentHealth; i++) {
+
+
 		
 		m_Health[i].setScale(scale);
 	}
@@ -100,8 +102,6 @@ void Hud::Update(double deltaTime, Player& player)
 	SetScore(player.GetScore());
 	
 	m_ScoreText.setString("Score: " + std::to_string(m_CurrentScore));
-
-	std::cout << "Score: " << m_CurrentScore << std::endl;
 }
 
 void Hud::Draw(sf::RenderWindow& window)
