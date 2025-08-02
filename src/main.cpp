@@ -4,6 +4,7 @@
 #include "include/Enemy.h"
 #include "include/EnemySpawner.h"
 #include "include/HUD.h"
+#include <SFML/Audio.hpp>
 
 int main()
 {
@@ -14,6 +15,23 @@ int main()
     Plane.Load();
     Plane.Initialize();
 // ------------------------------------------------------------
+// -----------------------------Music--------------------------
+    sf::Music backgroundMusic;
+
+    if (!backgroundMusic.openFromFile("resources/audio/Vibe1.mp3")) {
+           
+        std::cerr << "Failed to load music!" << std::endl;
+    }
+
+    else {
+        
+        std::cout << "Music loaded successfully :)" << std::endl;
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(50.0f);
+        backgroundMusic.play();
+    }
+
+//------------------------------------------------------------- 
 //------------------Initializing and loading the HUD-----------
     Hud hud;
     hud.Load();
@@ -55,6 +73,7 @@ int main()
 
 //--------------Initializing and loading Enemy---------------------
     EnemySpawner spawner;
+    spawner.Initialize();
 //----------------------------------------------------------------
     while (window.isOpen())
     {
@@ -91,6 +110,7 @@ int main()
         else {
 
             window.draw(gameOver);
+            backgroundMusic.stop();
         }
 
         window.display();
