@@ -5,6 +5,7 @@
 #include "include/EnemySpawner.h"
 #include "include/HUD.h"
 #include <SFML/Audio.hpp>
+#include "include/Menu.h"
 
 int main()
 {
@@ -32,6 +33,19 @@ int main()
     }
 
 //------------------------------------------------------------- 
+
+    Menu menu;
+
+    sf::Texture instructTextures;//Textures for instructions page/menu
+
+    if (!instructTextures.loadFromFile("resources/Instructions.jpg")) {
+        
+        std::cerr << "Failed to load Instructions textures!" << std::endl;
+    }
+
+    std::cout << "Loaded the Instructions textures Successfully :)" << std::endl;
+    sf::Sprite instruct(instructTextures);
+
 //------------------Initializing and loading the HUD-----------
     Hud hud;
     hud.Load();
@@ -80,14 +94,26 @@ int main()
         sf::Time deltaTimeTimer = clock.restart();
         double deltaTime = deltaTimeTimer.asSeconds();
         
-        if (!Plane.IsDead()) {
+        if (!Plane.IsDead() && !menu.InMenu() && !menu.InInstructions()) {
 
             Plane.Update(deltaTime, spawner);
 
             spawner.Update(deltaTime);
+
+            
+            hud.Update(deltaTime, Plane);
         }
 
-        hud.Update(deltaTime, Plane);
+        else if (menu.InMenu()) {
+            
+            menu.Update();
+            menu.Pressed();
+        }
+
+        else if (menu.InInstructions()) {
+            
+            menu.Pressed();
+        }
 
         while (const std::optional event = window.pollEvent())
         {
@@ -99,7 +125,7 @@ int main()
         
         window.clear();
 
-        if (!Plane.IsDead()) {
+        if (!Plane.IsDead() && !menu.InMenu() && !menu.InInstructions()) {
             
             window.draw(map);
             Plane.Draw(window);
@@ -107,10 +133,20 @@ int main()
             hud.Draw(window);
         }
 
-        else {
+        else if(!menu.InMenu() && Plane.IsDead()) {
 
             window.draw(gameOver);
             backgroundMusic.stop();
+        }
+
+        else if (menu.InMenu()) {
+            
+            menu.Draw(window);
+        }
+
+        else if (menu.InInstructions()) {
+            
+            window.draw(instruct);
         }
 
         window.display();
