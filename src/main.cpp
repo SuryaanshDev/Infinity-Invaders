@@ -8,6 +8,7 @@
 #include "include/Menu.h"
 #include "include/GameOver.h"
 #include "include/GameState.h"
+#include "include/HighScoreManager.h"
 
 int main()
 {
@@ -70,16 +71,16 @@ int main()
     EnemySpawner spawner;
     spawner.Initialize();
 
+    //Highscores
+    Highscoremanager highscoreManager("highscores.txt");
+
     // Main loop
     while (window.isOpen())
     {
         try {
-            std::cout << "DEBUG: Frame start, State: " << static_cast<int>(state) << std::endl;
 
             sf::Time deltaTimeTimer = clock.restart();
             double deltaTime = deltaTimeTimer.asSeconds();
-
-            std::cout << "DEBUG: Delta time: " << deltaTime << std::endl;
 
             // Event handling 
             while (const std::optional event = window.pollEvent())
@@ -115,30 +116,23 @@ int main()
             // Game State Updates
             if (state == GameState::MENU)
             {
-                std::cout << "DEBUG: Updating menu" << std::endl;
                 menu.Update();
                 menu.Pressed();
 
 
                 if (menu.IsPlayPressed())
                 {
-                    std::cout << "DEBUG: Play pressed, starting reset sequence" << std::endl;
 
                     backgroundMusic.stop();
 
-                    std::cout << "DEBUG: Clearing game over state" << std::endl;
                     gameOver.SetGameOver(false);
 
-                    std::cout << "DEBUG: Resetting spawner" << std::endl;
                     spawner.Reset();
 
-                    std::cout << "DEBUG: Resetting player" << std::endl;
                     Plane.Reset();
 
-                    std::cout << "DEBUG: Resetting HUD" << std::endl;
                     hud.Reset();
 
-                    std::cout << "DEBUG: Re-initializing components" << std::endl;
                     
                     try {
                         spawner.Initialize();
@@ -148,15 +142,12 @@ int main()
                         std::cerr << "Error during initialization: " << e.what() << std::endl;
                     }
 
-                    std::cout << "DEBUG: Clearing menu selection" << std::endl;
                     menu.ClearSelection();
 
-                    std::cout << "DEBUG: Starting music and changing to PLAYING state" << std::endl;
                     
                     backgroundMusic.play();
                     state = GameState::PLAYING;
 
-                    std::cout << "DEBUG: Reset sequence complete" << std::endl;
                 }
                 else if (menu.IsInstructionsPressed())
                 {
@@ -166,26 +157,24 @@ int main()
             }
             else if (state == GameState::PLAYING)
             {
-                std::cout << "DEBUG: Updating game - Player update start" << std::endl;
                 Plane.Update(deltaTime, spawner);
 
-                std::cout << "DEBUG: Updating game - Spawner update start" << std::endl;
                 spawner.Update(deltaTime);
 
-                std::cout << "DEBUG: Updating game - HUD update start" << std::endl;
                 hud.Update(deltaTime, Plane);
 
                 if (Plane.IsDead())
                 {
-                    std::cout << "DEBUG: Player died, switching to game over" << std::endl;
                     backgroundMusic.stop();
+
+                    gameOver.SetScore(Plane.GetScore(), highscoreManager);
+
                     gameOver.SetGameOver(true);
                     state = GameState::GAME_OVER;
                 }
             }
             else if (state == GameState::GAME_OVER)
             {
-                std::cout << "DEBUG: In game over state" << std::endl;
                 gameOver.Update(menu);
 
                 if (!gameOver.IsGameOver())
@@ -200,7 +189,6 @@ int main()
                 std::cout << "DEBUG: In instructions state" << std::endl;
             }
 
-            std::cout << "DEBUG: Starting render phase" << std::endl;
 
             // Rendering
             window.clear();
@@ -227,7 +215,6 @@ int main()
 
             window.display();
 
-            std::cout << "DEBUG: Frame complete" << std::endl;
         }
         catch (const std::exception& e) {
             std::cerr << "ERROR: Exception caught: " << e.what() << std::endl;

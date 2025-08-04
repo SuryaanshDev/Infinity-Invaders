@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(SFML)
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-add_executable(main src/main.cpp "include/Player.h" "src/player.cpp" "include/Bullet.h" "src/bullet.cpp" "src/Enemy.cpp" "include/EnemySpawner.h" "src/EnemySpawner.cpp" "include/Math.h" "src/math.cpp" "include/HUD.h" "src/hud.cpp" "include/Menu.h" "src/menu.cpp" "include/GameOver.h" "src/gameOver.cpp" "include/GameState.h")
+add_executable(main src/main.cpp "include/Player.h" "src/player.cpp" "include/Bullet.h" "src/bullet.cpp" "src/Enemy.cpp" "include/EnemySpawner.h" "src/EnemySpawner.cpp" "include/Math.h" "src/math.cpp" "include/HUD.h" "src/hud.cpp" "include/Menu.h" "src/menu.cpp" "include/GameOver.h" "src/gameOver.cpp" "include/GameState.h" "include/HighScoreManager.h" "src/highscoreManager.cpp")
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics SFML::Audio)
 target_include_directories(main PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
