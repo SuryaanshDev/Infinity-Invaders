@@ -15,6 +15,8 @@ private:
 	sf::SoundBuffer m_EnemyDeathBuffer;
 	sf::Sound m_EnemyDeathSound;
 
+	bool m_SoundLoaded;
+
 public:
 	
 	EnemySpawner();
@@ -24,4 +26,6 @@ public:
 	void Draw(sf::RenderWindow& window);
 	void Initialize();
 	std::vector<std::unique_ptr<Enemy>>& GetEnemies();
+
+	void Reset();
 };

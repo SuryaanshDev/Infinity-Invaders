@@ -14,6 +14,8 @@ private:
 	int m_PlayerHealth;
 
 	int m_PlayerScore;
+	int m_ScreenWidth;
+	int m_ScreenHeight;
 
 private:
 
@@ -42,6 +44,7 @@ public:
 	void Load();
 	void Update(double deltaTime, EnemySpawner& spawner);
 	void Draw(sf::RenderWindow& window);
+	void SetScreenDimensions(int width, int height);
 
 public:
 
@@ -50,6 +53,8 @@ public:
 	
 	int GetScore() const;
 	bool IsDead();
+
+	void Reset();
 
 private:
 

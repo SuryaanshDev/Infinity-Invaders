@@ -5,7 +5,7 @@
 class Menu {
 
 private:
-	
+
 	int m_Selected;
 	sf::Font m_Font;
 
@@ -17,11 +17,13 @@ public:
 	bool m_InMenu;
 	bool m_InInstructions;
 
+	bool m_EnterPressed = false;
+
 public:
 
 	Menu();
 	~Menu();
-	
+
 	void Update();
 	void Draw(sf::RenderWindow& window);
 	void MoveUp();
@@ -32,4 +34,12 @@ public:
 	bool InInstructions();
 
 	void UpdateColors();
+
+	void SetInMenu(bool set);
+
+public:
+
+	bool IsPlayPressed();
+	void ClearSelection();
+	bool IsInstructionsPressed();
 };

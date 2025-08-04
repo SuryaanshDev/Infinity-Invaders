@@ -30,4 +30,8 @@ public:
 	void Update(double deltaTime, Player& player);
 	void Draw(sf::RenderWindow& window);
 	void SetScore(int score);
+
+public:
+
+	void Reset();
 };
