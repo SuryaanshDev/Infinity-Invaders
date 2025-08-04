@@ -1,0 +1,281 @@
+name: Build GameCpp
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release
+      
+    - name: Package Windows Release
+      run: |
+        mkdir GameCpp-Windows-Release
+        copy build\bin\Release\GameCpp.exe GameCpp-Windows-Release\
+        xcopy resources GameCpp-Windows-Release\resources\ /e /i /h
+        
+        # Copy SFML DLLs if they exist
+        if (Test-Path "build\bin\Release\sfml-*.dll") {
+          copy build\bin\Release\sfml-*.dll GameCpp-Windows-Release\
+        }
+        
+        # Create README
+        @"
+        # GameCpp - Space Shooter (Windows)
+        
+        ## How to Play
+        - W/A/S/D: Move your ship
+        - Space: Shoot bullets  
+        - Enter: Select menu options
+        - Escape: Pause game or return to menu
+        
+        ## Installation
+        1. Extract all files to a folder
+        2. Run GameCpp.exe
+        3. Make sure the resources folder stays in the same directory
+        
+        ## System Requirements
+        - Windows 10 or later
+        - DirectX compatible graphics card
+        
+        Enjoy the game!
+        "@ | Out-File -FilePath GameCpp-Windows-Release\README.txt -Encoding UTF8
+      shell: powershell
+      
+    - name: Create Windows ZIP
+      run: |
+        Compress-Archive -Path GameCpp-Windows-Release -DestinationPath GameCpp-Windows.zip
+      shell: powershell
+      
+    - name: Upload Windows Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: GameCpp-Windows
+        path: GameCpp-Windows.zip
+
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        # CMake is already installed on GitHub runners
+        # Just make sure we have the latest
+        brew update
+        
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+          
+    - name: Build
+      run: cmake --build build --config Release -j$(sysctl -n hw.ncpu)
+      
+    - name: Create App Bundle
+      run: |
+        APP_NAME="GameCpp"
+        BUNDLE_NAME="${APP_NAME}.app"
+        BUNDLE_DIR="${BUNDLE_NAME}/Contents"
+        
+        # Create bundle structure
+        mkdir -p "$BUNDLE_DIR/MacOS"
+        mkdir -p "$BUNDLE_DIR/Resources"
+        
+        # Copy executable
+        cp build/bin/GameCpp "$BUNDLE_DIR/MacOS/$APP_NAME"
+        chmod +x "$BUNDLE_DIR/MacOS/$APP_NAME"
+        
+        # Copy resources
+        cp -r resources "$BUNDLE_DIR/Resources/"
+        
+        # Create Info.plist
+        cat > "$BUNDLE_DIR/Info.plist" << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleExecutable</key>
+            <string>$APP_NAME</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.yourname.gamecpp</string>
+            <key>CFBundleName</key>
+            <string>$APP_NAME</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0.0</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>10.15</string>
+            <key>NSHighResolutionCapable</key>
+            <true/>
+        </dict>
+        </plist>
+        EOF
+        
+    - name: Package macOS Release
+      run: |
+        mkdir GameCpp-macOS-Release
+        cp -r GameCpp.app GameCpp-macOS-Release/
+        
+        # Create README
+        cat > GameCpp-macOS-Release/README.txt << 'EOF'
+        # GameCpp - Space Shooter (macOS)
+        
+        ## Installation
+        1. Double-click GameCpp.app to run the game
+        2. If you get a security warning, right-click GameCpp.app and select "Open"
+        
+        ## How to Play
+        - W/A/S/D: Move your ship
+        - Space: Shoot bullets  
+        - Enter: Select menu options
+        - Escape: Pause game or return to menu
+        
+        ## System Requirements
+        - macOS 10.15 (Catalina) or later
+        - Works on both Intel and Apple Silicon Macs
+        
+        ## Troubleshooting
+        If you get "App can't be opened because it is from an unidentified developer":
+        1. Right-click on GameCpp.app
+        2. Select "Open" 
+        3. Click "Open" in the security dialog
+        
+        Enjoy the game!
+        EOF
+        
+    - name: Create macOS ZIP and DMG
+      run: |
+        # Create ZIP
+        zip -r GameCpp-macOS.zip GameCpp-macOS-Release/
+        
+        # Create DMG
+        hdiutil create -volname "GameCpp" -srcfolder GameCpp-macOS-Release -ov -format UDZO GameCpp-macOS.dmg
+        
+    - name: Upload macOS Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: GameCpp-macOS
+        path: |
+          GameCpp-macOS.zip
+          GameCpp-macOS.dmg
+
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+        
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      
+    - name: Build
+      run: cmake --build build --config Release -j$(nproc)
+      
+    - name: Package Linux Release
+      run: |
+        mkdir GameCpp-Linux-Release
+        cp build/bin/GameCpp GameCpp-Linux-Release/
+        cp -r resources GameCpp-Linux-Release/
+        
+        # Create launch script
+        cat > GameCpp-Linux-Release/GameCpp.sh << 'EOF'
+        #!/bin/bash
+        cd "$(dirname "$0")"
+        ./GameCpp
+        EOF
+        chmod +x GameCpp-Linux-Release/GameCpp.sh
+        
+        # Create README
+        cat > GameCpp-Linux-Release/README.txt << 'EOF'
+        # GameCpp - Space Shooter (Linux)
+        
+        ## Installation
+        1. Extract all files to a folder
+        2. Run ./GameCpp or double-click GameCpp.sh
+        
+        ## How to Play
+        - W/A/S/D: Move your ship
+        - Space: Shoot bullets  
+        - Enter: Select menu options
+        - Escape: Pause game or return to menu
+        
+        ## System Requirements
+        - Modern Linux distribution
+        - OpenGL support
+        
+        ## Dependencies
+        If the game doesn't start, install SFML libraries:
+        - Ubuntu/Debian: sudo apt-get install libsfml-dev
+        - Fedora: sudo dnf install SFML-devel
+        - Arch: sudo pacman -S sfml
+        
+        Enjoy the game!
+        EOF
+        
+    - name: Create Linux Archive
+      run: tar -czf GameCpp-Linux.tar.gz GameCpp-Linux-Release/
+      
+    - name: Upload Linux Build
+      uses: actions/upload-artifact@v4
+      with:
+        name: GameCpp-Linux
+        path: GameCpp-Linux.tar.gz
+
+  release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          GameCpp-Windows/GameCpp-Windows.zip
+          GameCpp-macOS/GameCpp-macOS.zip
+          GameCpp-macOS/GameCpp-macOS.dmg
+          GameCpp-Linux/GameCpp-Linux.tar.gz
+        body: |
+          ## GameCpp Release
+          
+          Cross-platform space shooter game built with C++ and SFML.
+          
+          ### Downloads:
+          - **Windows**: GameCpp-Windows.zip
+          - **macOS**: GameCpp-macOS.dmg (recommended) or GameCpp-macOS.zip
+          - **Linux**: GameCpp-Linux.tar.gz
+          
+          ### Installation:
+          - **Windows**: Extract and run GameCpp.exe
+          - **macOS**: Mount DMG and drag GameCpp.app to Applications, or extract ZIP
+          - **Linux**: Extract and run ./GameCpp
+          
+          See README.txt in each package for detailed instructions.
+        draft: false
+        prerelease: false
