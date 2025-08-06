@@ -90,50 +90,54 @@ int main()
 
                 if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
                 {
+                    
                     if (keyPressed->code == sf::Keyboard::Key::Escape)
                     {
-                        if (state == GameState::PLAYING)
+                        switch (state)
+
                         {
+
+                        case (GameState::PLAYING):
+
                             backgroundMusic.stop();
                             gameOver.SetGameOver(true);
                             state = GameState::GAME_OVER;
-                        }
-                        else if (state == GameState::INSTRUCTIONS)
-                        {
+                            break;
+
+                        case (GameState::INSTRUCTIONS):
+
                             state = GameState::MENU;
                             menu.SetInMenu(true);
-                        }
-                        else if (state == GameState::GAME_OVER)
-                        {
+                            break;
+
+                        case (GameState::GAME_OVER):
+
                             state = GameState::MENU;
                             menu.SetInMenu(true);
                             gameOver.SetGameOver(false);
+                            break;
+
+                        default:
+                            break;
                         }
                     }
                 }
             }
 
             // Game State Updates
-            if (state == GameState::MENU)
+            switch (state)
             {
+            case GameState::MENU:
                 menu.Update();
                 menu.Pressed();
-
-
                 if (menu.IsPlayPressed())
                 {
-
                     backgroundMusic.stop();
-
                     gameOver.SetGameOver(false);
-
                     spawner.Reset();
-
                     Plane.Reset();
-
                     hud.Reset();
 
-                    
                     try {
                         spawner.Initialize();
                         Plane.Initialize();
@@ -141,86 +145,78 @@ int main()
                     catch (const std::exception& e) {
                         std::cerr << "Error during initialization: " << e.what() << std::endl;
                     }
-
                     menu.ClearSelection();
 
-                    
                     backgroundMusic.play();
                     state = GameState::PLAYING;
-
                 }
                 else if (menu.IsInstructionsPressed())
                 {
                     state = GameState::INSTRUCTIONS;
                     menu.ClearSelection();
                 }
-            }
-            else if (state == GameState::PLAYING)
-            {
+                break;
+
+            case GameState::PLAYING:
                 Plane.Update(deltaTime, spawner);
-
                 spawner.Update(deltaTime);
-
                 hud.Update(deltaTime, Plane);
-
                 if (Plane.IsDead())
                 {
                     backgroundMusic.stop();
-
                     gameOver.SetScore(Plane.GetScore(), highscoreManager);
-
                     gameOver.SetGameOver(true);
                     state = GameState::GAME_OVER;
                 }
-            }
-            else if (state == GameState::GAME_OVER)
-            {
-                gameOver.Update(menu);
+                break;
 
+            case GameState::GAME_OVER:
+                gameOver.Update(menu);
                 if (!gameOver.IsGameOver())
                 {
                     state = GameState::MENU;
                     menu.SetInMenu(true);
                     menu.ClearSelection();
                 }
-            }
-            else if (state == GameState::INSTRUCTIONS)
-            {
-                std::cout << "DEBUG: In instructions state" << std::endl;
-            }
+                break;
 
+            case GameState::INSTRUCTIONS:
+                std::cout << "DEBUG: In instructions state" << std::endl;
+                break;
+
+            default:
+                break;
+            }
 
             // Rendering
             window.clear();
-
-            if (state == GameState::PLAYING)
+            switch (state)
             {
+            case GameState::PLAYING:
                 window.draw(map);
                 Plane.Draw(window);
                 spawner.Draw(window);
                 hud.Draw(window);
-            }
-            else if (state == GameState::GAME_OVER)
-            {
+                break;
+
+            case GameState::GAME_OVER:
                 gameOver.Draw(window);
-            }
-            else if (state == GameState::MENU)
-            {
+                break;
+
+            case GameState::MENU:
                 menu.Draw(window);
-            }
-            else if (state == GameState::INSTRUCTIONS)
-            {
+                break;
+
+            case GameState::INSTRUCTIONS:
                 window.draw(instruct);
+                break;
+
+            default:
+                break;
             }
-
             window.display();
+        }
 
-        }
-        catch (const std::exception& e) {
-            std::cerr << "ERROR: Exception caught: " << e.what() << std::endl;
-            std::cerr << "Current state: " << static_cast<int>(state) << std::endl;
-            break;
-        }
         catch (...) {
             std::cerr << "ERROR: Unknown exception caught!" << std::endl;
             std::cerr << "Current state: " << static_cast<int>(state) << std::endl;
