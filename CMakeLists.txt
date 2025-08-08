@@ -96,7 +96,6 @@ elseif(APPLE)
     # macOS-specific settings
     set_target_properties(GameCpp PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist
     )
     
     # Find and link required frameworks
